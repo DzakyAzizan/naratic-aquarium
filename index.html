@@ -145,7 +145,6 @@
 
         for (let id in data) {
             let item = data[id];
-            // Mengatasi data lama jika belum ada kolom merk
             let merkItem = item.merk ? item.merk : '-'; 
 
             tabel.innerHTML += `<tr>
@@ -154,7 +153,7 @@
                 <td>${item.size}</td>
                 <td style="font-size: 16px;"><strong>${item.jumlah}</strong></td>
                 <td>
-                    <button class="btn-edit" onclick="ubahStok('${id}', '${item.nama} (${merkItem})', ${item.jumlah})">Ubah</button>
+                    <button class="btn-edit" onclick="ubahData('${id}', '${item.nama}', '${merkItem}', '${item.size}', ${item.jumlah})">Ubah</button>
                     <button class="btn-hapus" onclick="hapusBarang('${id}', '${item.nama} (${merkItem})')">Hapus</button>
                 </td>
             </tr>`;
@@ -187,14 +186,29 @@
         document.getElementById('jumlahBarang').value = '';
     };
 
-    // 4. Fungsi Ubah Stok
-    window.ubahStok = function(id, infoBarang, stokLama) {
-        let stokBaru = prompt(`Ubah jumlah stok untuk "${infoBarang}":`, stokLama);
-        if (stokBaru !== null && stokBaru !== "") {
-            update(ref(db, 'stok-naratic/' + id), {
-                jumlah: parseInt(stokBaru)
-            });
-        }
+    // 4. Fungsi Ubah Data Lengkap (Nama, Merk, Size, Stok)
+    window.ubahData = function(id, namaLama, merkLama, sizeLama, jumlahLama) {
+        let namaBaru = prompt("Ubah Nama Barang:", namaLama);
+        if (namaBaru === null) return; // Batal jika pencet cancel
+
+        let merkBaru = prompt("Ubah Merk Barang:", merkLama);
+        if (merkBaru === null) return;
+
+        let sizeBaru = prompt("Ubah Size/Kapasitas:", sizeLama);
+        if (sizeBaru === null) return;
+
+        let jumlahBaru = prompt("Ubah Jumlah Stok:", jumlahLama);
+        if (jumlahBaru === null || jumlahBaru === "") return;
+
+        // Kirim update lengkap ke Firebase
+        update(ref(db, 'stok-naratic/' + id), {
+            nama: namaBaru,
+            merk: merkBaru,
+            size: sizeBaru,
+            jumlah: parseInt(jumlahBaru)
+        });
+        
+        alert('✅ Data berhasil diperbarui!');
     };
 
     // 5. Fungsi Hapus Barang
@@ -215,7 +229,6 @@
             let namaBarang = item.nama ? item.nama.toLowerCase() : '';
             let merkBarang = item.merk ? item.merk.toLowerCase() : '';
             
-            // Cocok jika kata kunci ada di nama ATAU di merk
             if (namaBarang.includes(kataKunci) || merkBarang.includes(kataKunci)) {
                 dataHasilPencarian[id] = item;
             }
