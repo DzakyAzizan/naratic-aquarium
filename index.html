@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naratic Aquarium - Stok Opname</title>
+    <style>
+        /* Desain Tema Aquarium (Biru & Putih) */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #e0f7fa; 
+            margin: 0; 
+            padding: 15px; 
+            color: #333;
+        }
+        .container { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+            max-width: 600px;
+            margin: auto;
+        }
+        h2 { color: #00838f; text-align: center; margin-top: 0; }
+        
+        /* Gaya untuk Form Input & Pencarian */
+        .form-group { margin-bottom: 10px; }
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 5px; 
+            box-sizing: border-box; 
+            border-radius: 8px; 
+            border: 1px solid #b2ebf2; 
+            font-size: 14px;
+        }
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 10px; 
+            background-color: #00acc1; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:active { background-color: #00838f; }
+        
+        .search-box { margin-top: 25px; margin-bottom: 15px; border-top: 2px dashed #b2ebf2; padding-top: 15px;}
+        
+        /* Gaya untuk Tabel */
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 400px; }
+        th, td { border: 1px solid #e0e0e0; padding: 12px 10px; text-align: left; font-size: 14px;}
+        th { background-color: #00838f; color: white; }
+        
+        /* Tombol Ubah/Edit */
+        .btn-edit {
+            background-color: #ffa000;
+            padding: 6px 10px;
+            margin: 0;
+            font-size: 12px;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🌊 Naratic Aquarium 🌊<br><small style="font-size: 14px; color: #555;">Sistem Stok Opname</small></h2>
+    
+    <!-- Form Tambah Barang -->
+    <div class="form-group">
+        <input type="text" id="namaBarang" placeholder="Nama Barang (Cth: Pompa Air Amara)">
+    </div>
+    <div class="form-group">
+        <input type="text" id="sizeBarang" placeholder="Size/Kapasitas (Cth: 1000 L/H atau 50cm)">
+    </div>
+    <div class="form-group">
+        <input type="number" id="jumlahBarang" placeholder="Jumlah Stok (Cth: 12)">
+    </div>
+    <button onclick="tambahBarang()">➕ Tambah Stok Barang</button>
+
+    <!-- Fitur Pencarian -->
+    <div class="search-box">
+        <input type="text" id="cariBarang" placeholder="🔍 Cari nama barang untuk diubah..." onkeyup="cariData()">
+    </div>
+
+    <!-- Tabel Data -->
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nama Barang</th>
+                    <th>Size/Kapasitas</th>
+                    <th>Stok</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="tabelStok">
+                <!-- Data akan dimunculkan oleh JavaScript di sini -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // 1. Mengambil data yang tersimpan di memori HP (Local Storage)
+    let daftarStok = JSON.parse(localStorage.getItem('dataNaratic')) || [];
+
+    // 2. Fungsi untuk menampilkan data ke dalam tabel
+    function tampilkanData(dataYangDitampilkan = daftarStok) {
+        let tabel = document.getElementById('tabelStok');
+        tabel.innerHTML = ''; // Kosongkan tabel sebelum diisi ulang
+
+        dataYangDitampilkan.forEach((item, index) => {
+            let baris = `<tr>
+                <td>${item.nama}</td>
+                <td>${item.size}</td>
+                <td><strong>${item.jumlah}</strong></td>
+                <td><button class="btn-edit" onclick="ubahStok(${index})">Ubah Stok</button></td>
+            </tr>`;
+            tabel.innerHTML += baris;
+        });
+    }
+
+    // 3. Fungsi untuk menambah barang baru
+    function tambahBarang() {
+        let namaInput = document.getElementById('namaBarang').value;
+        let sizeInput = document.getElementById('sizeBarang').value;
+        let jumlahInput = document.getElementById('jumlahBarang').value;
+
+        if(namaInput === '' || sizeInput === '' || jumlahInput === '') {
+            alert('⚠️ Lengkapi semua data (Nama, Size, dan Jumlah) terlebih dahulu!');
+            return;
+        }
+
+        // Memasukkan data baru ke dalam daftar
+        daftarStok.push({
+            nama: namaInput,
+            size: sizeInput,
+            jumlah: jumlahInput
+        });
+
+        // Simpan ke memori dan perbarui tampilan
+        simpanData();
+        tampilkanData();
+
+        // Kosongkan form input
+        document.getElementById('namaBarang').value = '';
+        document.getElementById('sizeBarang').value = '';
+        document.getElementById('jumlahBarang').value = '';
+    }
+
+    // 4. Fungsi untuk mengubah jumlah stok
+    function ubahStok(index) {
+        let stokLama = daftarStok[index].jumlah;
+        let stokBaru = prompt(`Ubah jumlah stok untuk "${daftarStok[index].nama}" (${daftarStok[index].size}):`, stokLama);
+        
+        // Mengecek apakah pengguna memasukkan angka baru atau membatalkan (cancel)
+        if (stokBaru !== null && stokBaru !== "") {
+            daftarStok[index].jumlah = parseInt(stokBaru);
+            simpanData();
+            tampilkanData();
+            alert('✅ Stok berhasil diubah!');
+        }
+    }
+
+    // 5. Fungsi untuk mencari barang
+    function cariData() {
+        let kataKunci = document.getElementById('cariBarang').value.toLowerCase();
+        
+        // Menyaring data yang namanya cocok dengan ketikan pencarian
+        let dataHasilPencarian = daftarStok.filter(item => 
+            item.nama.toLowerCase().includes(kataKunci)
+        );
+        
+        tampilkanData(dataHasilPencarian);
+    }
+
+    // 6. Fungsi untuk menyimpan data permanen ke memori browser HP
+    function simpanData() {
+        localStorage.setItem('dataNaratic', JSON.stringify(daftarStok));
+    }
+
+    // 7. Jalankan fungsi tampilkan data pertama kali saat web dibuka
+    tampilkanData();
+</script>
+
+</body>
+</html>
