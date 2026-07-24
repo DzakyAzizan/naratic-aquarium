@@ -18,7 +18,7 @@
             padding: 20px; 
             border-radius: 12px; 
             box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
-            max-width: 600px;
+            max-width: 650px;
             margin: auto;
         }
         h2 { color: #00838f; text-align: center; margin-top: 0; }
@@ -50,7 +50,7 @@
         .search-box { margin-top: 25px; margin-bottom: 15px; border-top: 2px dashed #b2ebf2; padding-top: 15px;}
         
         .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 400px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 450px; }
         th, td { border: 1px solid #e0e0e0; padding: 12px 10px; text-align: left; font-size: 14px;}
         th { background-color: #00838f; color: white; }
         
@@ -63,9 +63,12 @@
 <div class="container">
     <h2>🌊 Naratic Aquarium 🌊<br><small style="font-size: 14px; color: #555;">Sistem Stok Realtime (Online)</small></h2>
     
-    <!-- Form Tambah Barang -->
+    <!-- Form Tambah Barang dengan Kolom Merk -->
     <div class="form-group">
-        <input type="text" id="namaBarang" placeholder="Nama Barang (Cth: Pompa Air Amara)">
+        <input type="text" id="namaBarang" placeholder="Nama Barang (Cth: Pompa Air)">
+    </div>
+    <div class="form-group">
+        <input type="text" id="merkBarang" placeholder="Merk Barang (Cth: Amara / Yamano)">
     </div>
     <div class="form-group">
         <input type="text" id="sizeBarang" placeholder="Size/Kapasitas (Cth: 1000 L/H atau 50cm)">
@@ -75,9 +78,9 @@
     </div>
     <button onclick="tambahBarang()">➕ Tambah Stok Barang</button>
 
-    <!-- Fitur Pencarian -->
+    <!-- Fitur Pencarian (Bisa cari berdasarkan Nama atau Merk) -->
     <div class="search-box">
-        <input type="text" id="cariBarang" placeholder="🔍 Cari nama barang..." onkeyup="cariData()">
+        <input type="text" id="cariBarang" placeholder="🔍 Cari nama barang atau merk..." onkeyup="cariData()">
     </div>
 
     <!-- Tabel Data -->
@@ -86,13 +89,14 @@
             <thead>
                 <tr>
                     <th>Nama Barang</th>
+                    <th>Merk</th>
                     <th>Size</th>
                     <th>Stok</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
             <tbody id="tabelStok">
-                <tr><td colspan="4" style="text-align:center;">⏳ Menghubungkan ke Database...</td></tr>
+                <tr><td colspan="5" style="text-align:center;">⏳ Menghubungkan ke Database...</td></tr>
             </tbody>
         </table>
     </div>
@@ -135,19 +139,23 @@
         tabel.innerHTML = ''; 
 
         if (Object.keys(data).length === 0) {
-            tabel.innerHTML = '<tr><td colspan="4" style="text-align:center;">Data masih kosong.</td></tr>';
+            tabel.innerHTML = '<tr><td colspan="5" style="text-align:center;">Data masih kosong.</td></tr>';
             return;
         }
 
         for (let id in data) {
             let item = data[id];
+            // Mengatasi data lama jika belum ada kolom merk
+            let merkItem = item.merk ? item.merk : '-'; 
+
             tabel.innerHTML += `<tr>
                 <td>${item.nama}</td>
+                <td><span style="background: #e0f7fa; padding: 3px 8px; border-radius: 4px; font-weight: bold; color: #00838f;">${merkItem}</span></td>
                 <td>${item.size}</td>
                 <td style="font-size: 16px;"><strong>${item.jumlah}</strong></td>
                 <td>
-                    <button class="btn-edit" onclick="ubahStok('${id}', '${item.nama}', ${item.jumlah})">Ubah</button>
-                    <button class="btn-hapus" onclick="hapusBarang('${id}', '${item.nama}')">Hapus</button>
+                    <button class="btn-edit" onclick="ubahStok('${id}', '${item.nama} (${merkItem})', ${item.jumlah})">Ubah</button>
+                    <button class="btn-hapus" onclick="hapusBarang('${id}', '${item.nama} (${merkItem})')">Hapus</button>
                 </td>
             </tr>`;
         }
@@ -156,28 +164,32 @@
     // 3. Fungsi Tambah Barang
     window.tambahBarang = function() {
         let namaInput = document.getElementById('namaBarang').value;
+        let merkInput = document.getElementById('merkBarang').value;
         let sizeInput = document.getElementById('sizeBarang').value;
         let jumlahInput = document.getElementById('jumlahBarang').value;
 
-        if(namaInput === '' || sizeInput === '' || jumlahInput === '') {
-            alert('⚠️ Lengkapi semua data terlebih dahulu!');
+        if(namaInput === '' || merkInput === '' || sizeInput === '' || jumlahInput === '') {
+            alert('⚠️ Lengkapi semua data (Nama, Merk, Size, dan Jumlah) terlebih dahulu!');
             return;
         }
 
         push(dbRef, {
             nama: namaInput,
+            merk: merkInput,
             size: sizeInput,
             jumlah: parseInt(jumlahInput)
         });
 
+        // Kosongkan form setelah input
         document.getElementById('namaBarang').value = '';
+        document.getElementById('merkBarang').value = '';
         document.getElementById('sizeBarang').value = '';
         document.getElementById('jumlahBarang').value = '';
     };
 
     // 4. Fungsi Ubah Stok
-    window.ubahStok = function(id, namaBarang, stokLama) {
-        let stokBaru = prompt(`Ubah jumlah stok untuk "${namaBarang}":`, stokLama);
+    window.ubahStok = function(id, infoBarang, stokLama) {
+        let stokBaru = prompt(`Ubah jumlah stok untuk "${infoBarang}":`, stokLama);
         if (stokBaru !== null && stokBaru !== "") {
             update(ref(db, 'stok-naratic/' + id), {
                 jumlah: parseInt(stokBaru)
@@ -186,21 +198,26 @@
     };
 
     // 5. Fungsi Hapus Barang
-    window.hapusBarang = function(id, namaBarang) {
-        let konfirmasi = confirm(`Yakin ingin menghapus "${namaBarang}" secara permanen?`);
+    window.hapusBarang = function(id, infoBarang) {
+        let konfirmasi = confirm(`Yakin ingin menghapus "${infoBarang}" secara permanen?`);
         if(konfirmasi) {
             remove(ref(db, 'stok-naratic/' + id));
         }
     };
 
-    // 6. Fungsi Pencarian
+    // 6. Fungsi Pencarian (Berdasarkan Nama ATAU Merk)
     window.cariData = function() {
         let kataKunci = document.getElementById('cariBarang').value.toLowerCase();
         let dataHasilPencarian = {};
         
         for (let id in dataGlobal) {
-            if (dataGlobal[id].nama.toLowerCase().includes(kataKunci)) {
-                dataHasilPencarian[id] = dataGlobal[id];
+            let item = dataGlobal[id];
+            let namaBarang = item.nama ? item.nama.toLowerCase() : '';
+            let merkBarang = item.merk ? item.merk.toLowerCase() : '';
+            
+            // Cocok jika kata kunci ada di nama ATAU di merk
+            if (namaBarang.includes(kataKunci) || merkBarang.includes(kataKunci)) {
+                dataHasilPencarian[id] = item;
             }
         }
         
