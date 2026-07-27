@@ -286,7 +286,7 @@
       </div>
 
       <div class="search-box">
-        <input type="text" id="cariBarang" placeholder="🔍 Cari berdasarkan Nama atau Merk..." onkeyup="cariData()" />
+        <input type="text" id="cariBarang" placeholder="🔍 Cari huruf depan (Awalan Nama/Merk)..." onkeyup="cariData()" />
       </div>
 
       <div class="table-responsive">
@@ -437,21 +437,20 @@
                 <td align="center">${item.size}</td>
                 <td align="center"><strong>${item.jumlah}</strong></td>
                 <td align="center">
-                    <button class="btn-edit" onclick="bukaModal('${id}', '${item.nama}', '${item.merk || ""}', '${item.size}', ${item.jumlah})">Ubah</button>
+                    <button class="btn-edit" onclick="bukaModal('${id}', '${item.nama}', '${item.merk || ""}', '${item.size || ""}', ${item.jumlah})">Ubah</button>
                 </td>
             </tr>`;
         });
       }
 
-      // --- FITUR MENCATAT RIWAYAT (LOG) YANG DIPERBARUI ---
-      // Sekarang menerima sizeBarang untuk ditampilkan secara detail
+      // --- FITUR MENCATAT RIWAYAT (LOG) ---
       function catatRiwayat(namaBarang, merkBarang, sizeBarang, kategoriBarang, keterangan) {
         push(ref(db, "riwayat-stok"), {
           waktu_angka: new Date().getTime(),
           waktu_teks: new Date().toLocaleString("id-ID"),
           nama: namaBarang,
           merk: merkBarang,
-          size: sizeBarang, // MENAMBAHKAN UKURAN (SIZE) KE DATABASE RIWAYAT
+          size: sizeBarang,
           kategori: kategoriBarang,
           keterangan: keterangan,
         });
@@ -519,6 +518,8 @@
           catatRiwayat(namaBaru, merkBaru, sizeBaru, namaKategori, `Masuk (+${selisih})`);
         } else if (selisih < 0) {
           catatRiwayat(namaBaru, merkBaru, sizeBaru, namaKategori, `Keluar (${selisih})`);
+        } else if (selisih === 0) {
+          catatRiwayat(namaBaru, merkBaru, sizeBaru, namaKategori, `Edit Rincian Barang`);
         }
 
         update(ref(db, "stok-naratic/" + kategoriSaatIni + "/" + id), {
@@ -531,19 +532,33 @@
         tutupModal();
       };
 
+      // --- PENCARIAN CERDAS (FOKUS HURUF DEPAN) ---
       window.cariData = function () {
         let kataKunci = document.getElementById("cariBarang").value.toLowerCase();
         let dataHasilPencarian = {};
+
         for (let id in dataGlobal) {
           let item = dataGlobal[id];
-          if ((item.nama || "").toLowerCase().includes(kataKunci) || (item.merk || "").toLowerCase().includes(kataKunci)) {
+          let namaBarang = (item.nama || "").toLowerCase();
+          let merkBarang = (item.merk || "").toLowerCase();
+
+          // Sistem memecah kalimat menjadi beberapa kata
+          let kataKataNama = namaBarang.split(" ");
+          let kataKataMerk = merkBarang.split(" ");
+
+          // Mengecek spesifik: "Apakah ada kata yang berawalan (startsWith) dengan huruf yang diketik?"
+          let awalanNamaCocok = kataKataNama.some((kata) => kata.startsWith(kataKunci));
+          let awalanMerkCocok = kataKataMerk.some((kata) => kata.startsWith(kataKunci));
+
+          if (awalanNamaCocok || awalanMerkCocok) {
             dataHasilPencarian[id] = item;
           }
         }
+
         tampilkanData(dataHasilPencarian);
       };
 
-      // --- HALAMAN RIWAYAT KELUAR MASUK (DENGAN PEMBERSIH OTOMATIS) ---
+      // --- HALAMAN RIWAYAT KELUAR MASUK ---
       window.bukaRiwayat = function () {
         document.getElementById("halamanDashboard").style.display = "none";
         document.getElementById("halamanInventaris").style.display = "none";
@@ -557,7 +572,6 @@
         listenerFirebase = onValue(ref(db, "riwayat-stok"), (snapshot) => {
           let data = snapshot.val() || {};
 
-          // --- SISTEM PENGHAPUS OTOMATIS (AUTO-CLEANER) ---
           let waktuSekarang = new Date().getTime();
           let batasBulanLalu = waktuSekarang - 30 * 24 * 60 * 60 * 1000;
 
@@ -570,8 +584,6 @@
               dataTampil[id] = data[id];
             }
           }
-          // ------------------------------------------------
-
           tampilkanRiwayat(dataTampil);
         });
       };
@@ -590,14 +602,17 @@
           arrayData.push(data[id]);
         }
 
-        // Urutkan riwayat dari yang Paling Baru ke Paling Lama
         arrayData.sort((a, b) => b.waktu_angka - a.waktu_angka);
 
         arrayData.forEach((item) => {
-          let warnaKeterangan = item.keterangan.includes("Keluar") ? "#cc0000" : "#28a745";
+          let warnaKeterangan = "#28a745";
+          if (item.keterangan.includes("Keluar")) {
+            warnaKeterangan = "#cc0000";
+          } else if (item.keterangan.includes("Edit")) {
+            warnaKeterangan = "#ff9900";
+          }
 
-          // Membuat teks size berwarna jingga (orange) agar terlihat beda dengan merk
-          let labelSize = item.size ? `<span style="font-size: 10px; color: #e67e22; font-weight:bold;">| Ukuran: ${item.size}</span>` : "";
+          let labelSize = item.size ? `<span style="font-size: 10px; color: #d35400; font-weight:bold; background: #fbeee6; padding: 2px 5px; border-radius: 4px; margin-left: 5px;">📐 ${item.size}</span>` : "";
 
           tabel.innerHTML += `<tr>
                 <td style="font-size: 10px; color:#666;">${item.waktu_teks}</td>
@@ -605,7 +620,7 @@
                     <strong>${item.nama}</strong><br>
                     <span style="font-size: 10px; color: #004080; font-weight:bold;">[${item.merk}]</span> 
                     ${labelSize}
-                    - <span style="font-size: 10px; color: #888;">${item.kategori}</span>
+                    <br><span style="font-size: 10px; color: #888;">${item.kategori}</span>
                 </td>
                 <td style="color: ${warnaKeterangan}; font-weight: bold; text-align: center;">${item.keterangan}</td>
             </tr>`;
