@@ -1,508 +1,375 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Naratic Aquarium Design</title>
     <style>
-      /* Desain Tema Aquarium & Modern Dashboard */
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f0f8ff;
-        margin: 0;
-        padding: 15px;
-        color: #333;
-      }
-      .container {
-        background: white;
-        padding: 25px;
-        border-radius: 16px;
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
-        max-width: 700px;
-        margin: auto;
-      }
-
-      /* --- GAYA KHUSUS MENU UTAMA (DASHBOARD) --- */
-      .judul-dashboard {
-        color: #0066cc;
-        text-align: center;
-        margin-top: 10px;
-        font-size: 28px;
-        margin-bottom: 5px;
-      }
-      .subjudul-dashboard {
-        text-align: center;
-        color: #666;
-        font-size: 14px;
-        margin-top: 0;
-        margin-bottom: 30px;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-      }
-
-      .menu-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-      }
-      .btn-menu {
-        background: linear-gradient(135deg, #0066cc, #0088ff);
-        color: white;
-        border: none;
-        padding: 20px;
-        border-radius: 12px;
-        font-size: 18px;
-        font-weight: bold;
-        cursor: pointer;
-        box-shadow: 0 4px 10px rgba(0, 102, 204, 0.3);
-        transition:
-          transform 0.2s,
-          box-shadow 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-      }
-      .btn-menu:active {
-        transform: scale(0.98);
-      }
-
-      /* --- GAYA HALAMAN INVENTARIS --- */
-      .header-inventaris {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 20px;
-        border-bottom: 2px solid #e6f2ff;
-        padding-bottom: 15px;
-      }
-      .btn-kembali {
-        background-color: #f1f3f5;
-        color: #333;
-        border: 1px solid #ccc;
-        padding: 8px 15px;
-        border-radius: 8px;
-        font-weight: bold;
-        cursor: pointer;
-      }
-      .judul-kategori {
-        color: #004080;
-        margin: 0;
-        font-size: 20px;
-      }
-
-      .form-section {
-        background: #e6f2ff;
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-      }
-      .form-group {
-        margin-bottom: 12px;
-      }
-      label {
-        display: block;
-        font-size: 13px;
-        font-weight: bold;
-        color: #004080;
-        margin-bottom: 4px;
-      }
-      input {
-        width: 100%;
-        padding: 10px 12px;
-        box-sizing: border-box;
-        border-radius: 8px;
-        border: 1px solid #b3d1ff;
-        font-size: 14px;
-        outline: none;
-      }
-      input:focus {
-        border-color: #0066cc;
-        box-shadow: 0 0 5px rgba(0, 102, 204, 0.3);
-      }
-
-      .btn-primary {
-        width: 100%;
-        padding: 12px;
-        background-color: #0066cc;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-weight: bold;
-        font-size: 15px;
-        cursor: pointer;
-      }
-      .search-box {
-        margin-bottom: 20px;
-      }
-
-      /* Tabel */
-      .table-responsive {
-        width: 100%;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        table-layout: auto;
-      }
-      th,
-      td {
-        border: 1px solid #e1e1e1;
-        padding: 10px 8px;
-        text-align: left;
-        font-size: 13px;
-        word-wrap: break-word;
-      }
-      th {
-        background-color: #0066cc;
-        color: white;
-        font-weight: 600;
-        text-align: center;
-      }
-      tr:nth-child(even) {
-        background-color: #f9fbfd;
-      }
-
-      .btn-edit {
-        background-color: #ff9900;
-        padding: 6px 14px;
-        font-size: 12px;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: bold;
-      }
-
-      /* Modal Pop-up Edit */
-      .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        align-items: center;
-        justify-content: center;
-      }
-      .modal-content {
-        background-color: white;
-        padding: 25px;
-        border-radius: 12px;
-        width: 90%;
-        max-width: 400px;
-      }
-      .modal-buttons {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-      }
-      .btn-secondary {
-        background-color: #6c757d;
-        color: white;
-        border: none;
-        padding: 10px;
-        border-radius: 6px;
-        cursor: pointer;
-        width: 50%;
-        font-weight: bold;
-      }
-      .btn-success {
-        background-color: #28a745;
-        color: white;
-        border: none;
-        padding: 10px;
-        border-radius: 6px;
-        cursor: pointer;
-        width: 50%;
-        font-weight: bold;
-      }
-
-      /* Responsif HP */
-      @media (max-width: 500px) {
-        body {
-          padding: 10px;
+        /* Desain Tema Aquarium & Modern Dashboard */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f0f8ff; 
+            margin: 0; 
+            padding: 15px; 
+            color: #333;
         }
-        .container {
-          padding: 15px 10px;
+        .container { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 16px; 
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08); 
+            max-width: 700px;
+            margin: auto;
         }
-        th,
-        td {
-          padding: 6px 4px;
-          font-size: 11px;
+        
+        /* --- GAYA KHUSUS MENU UTAMA (DASHBOARD) --- */
+        .judul-dashboard { color: #0066cc; text-align: center; margin-top: 10px; font-size: 28px; margin-bottom: 5px; }
+        .subjudul-dashboard { text-align: center; color: #666; font-size: 14px; margin-top: 0; margin-bottom: 30px; letter-spacing: 1px; text-transform: uppercase;}
+        
+        .menu-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
-        .btn-edit {
-          padding: 5px 8px;
-          font-size: 10px;
+        .btn-menu {
+            background: linear-gradient(135deg, #0066cc, #0088ff);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 102, 204, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
-        .judul-dashboard {
-          font-size: 24px;
+        .btn-menu:active { transform: scale(0.98); }
+
+        /* --- GAYA HALAMAN INVENTARIS --- */
+        .header-inventaris { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 2px solid #e6f2ff; padding-bottom: 15px;}
+        .btn-kembali { background-color: #f1f3f5; color: #333; border: 1px solid #ccc; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .judul-kategori { color: #004080; margin: 0; font-size: 20px; }
+
+        .form-section { background: #e6f2ff; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-size: 13px; font-weight: bold; color: #004080; margin-bottom: 4px; }
+        input { 
+            width: 100%; padding: 10px 12px; box-sizing: border-box; 
+            border-radius: 8px; border: 1px solid #b3d1ff; font-size: 14px; outline: none;
         }
-      }
+        input:focus { border-color: #0066cc; box-shadow: 0 0 5px rgba(0,102,204,0.3); }
+        
+        .btn-primary { 
+            width: 100%; padding: 12px; background-color: #0066cc; color: white; 
+            border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer;
+        }
+        .search-box { margin-bottom: 20px; }
+        
+        /* Tabel */
+        .table-responsive { width: 100%; }
+        table { width: 100%; border-collapse: collapse; table-layout: auto; }
+        th, td { border: 1px solid #e1e1e1; padding: 10px 8px; text-align: left; font-size: 13px; word-wrap: break-word;}
+        th { background-color: #0066cc; color: white; font-weight: 600; text-align: center; }
+        tr:nth-child(even) { background-color: #f9fbfd; }
+        
+        .btn-edit { background-color: #ff9900; padding: 6px 14px; font-size: 12px; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;}
+        
+        /* Modal Pop-up Edit */
+        .modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; 
+            background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;
+        }
+        .modal-content { background-color: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-secondary { background-color: #6c757d; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 50%; font-weight: bold;}
+        .btn-success { background-color: #28a745; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 50%; font-weight: bold;}
+
+        /* Responsif HP */
+        @media (max-width: 500px) {
+            body { padding: 10px; }
+            .container { padding: 15px 10px; }
+            th, td { padding: 6px 4px; font-size: 11px; }
+            .btn-edit { padding: 5px 8px; font-size: 10px; }
+            .judul-dashboard { font-size: 24px; }
+        }
     </style>
-  </head>
-  <body>
-    <!-- ========================================== -->
-    <!-- 1. HALAMAN MENU UTAMA (DASHBOARD)          -->
-    <!-- ========================================== -->
-    <div id="halamanDashboard" class="container">
-      <h1 class="judul-dashboard">🌊 Naratic Aquarium Design</h1>
-      <p class="subjudul-dashboard">Sistem Stok Opname Realtime</p>
+</head>
+<body>
 
-      <div class="menu-grid">
-        <button class="btn-menu" onclick="bukaKategori('aksesoris-pipa', 'Accecoris Pipa')">🚰 Accecoris Pipa</button>
-        <button class="btn-menu" onclick="bukaKategori('aksesoris-pompa', 'Accecoris Pompa')">⚙️ Accecoris Pompa</button>
-        <button class="btn-menu" onclick="bukaKategori('aquarium', 'Aquarium')">🐟 Aquarium</button>
-      </div>
+<!-- ========================================== -->
+<!-- 1. HALAMAN MENU UTAMA (DASHBOARD)          -->
+<!-- ========================================== -->
+<div id="halamanDashboard" class="container">
+    <h1 class="judul-dashboard">🌊 Naratic Aquarium Desaign</h1>
+    <p class="subjudul-dashboard">Sistem Stok Opname Realtime</p>
+    
+    <div class="menu-grid">
+        <button class="btn-menu" onclick="bukaKategori('aksesoris-pipa', 'Accecoris Pipa')">
+            🚰 Accecoris Pipa
+        </button>
+        <button class="btn-menu" onclick="bukaKategori('aksesoris-pompa', 'Accecoris Pompa')">
+            ⚙️ Accecoris Pompa
+        </button>
+        <button class="btn-menu" onclick="bukaKategori('aquarium', 'Aquarium')">
+            🐟 Aquarium
+        </button>
     </div>
+</div>
 
-    <!-- ========================================== -->
-    <!-- 2. HALAMAN INVENTARIS (Form & Tabel)       -->
-    <!-- ========================================== -->
-    <div id="halamanInventaris" class="container" style="display: none">
-      <div class="header-inventaris">
+<!-- ========================================== -->
+<!-- 2. HALAMAN INVENTARIS (Form & Tabel)       -->
+<!-- ========================================== -->
+<div id="halamanInventaris" class="container" style="display: none;">
+    
+    <div class="header-inventaris">
         <button class="btn-kembali" onclick="kembaliKeDashboard()">⬅ Kembali</button>
         <h2 id="judulKategoriAktif" class="judul-kategori">Nama Kategori</h2>
-      </div>
-
-      <!-- Form Tambah Barang -->
-      <div class="form-section">
-        <h3 style="margin-top: 0; font-size: 16px; color: #004080">➕ Tambah Barang Baru</h3>
+    </div>
+    
+    <!-- Form Tambah Barang -->
+    <div class="form-section">
+        <h3 style="margin-top: 0; font-size: 16px; color: #004080;">➕ Tambah Barang Baru</h3>
         <div class="form-group">
-          <label>Nama Barang</label>
-          <input type="text" id="namaBarang" placeholder="Cth: Sambungan L / Mesin Filter" />
+            <label>Nama Barang</label>
+            <input type="text" id="namaBarang" placeholder="Cth: Sambungan L / Mesin Filter">
         </div>
         <div class="form-group">
-          <label>Merk Barang</label>
-          <input type="text" id="merkBarang" placeholder="Cth: Amara / Polos" />
+            <label>Merk Barang</label>
+            <input type="text" id="merkBarang" placeholder="Cth: Amara / Polos">
         </div>
         <div class="form-group">
-          <label>Size / Kapasitas / Ukuran</label>
-          <input type="text" id="sizeBarang" placeholder="Cth: 1/2 inch atau 50cm" />
+            <label>Size / Kapasitas / Ukuran</label>
+            <input type="text" id="sizeBarang" placeholder="Cth: 1/2 inch atau 50cm">
         </div>
         <div class="form-group">
-          <label>Jumlah Stok</label>
-          <input type="number" id="jumlahBarang" placeholder="Cth: 15" />
+            <label>Jumlah Stok</label>
+            <input type="number" id="jumlahBarang" placeholder="Cth: 15">
         </div>
         <button class="btn-primary" onclick="tambahBarang()">Simpan Barang ke Stok</button>
-      </div>
-
-      <!-- Fitur Pencarian -->
-      <div class="search-box">
-        <input type="text" id="cariBarang" placeholder="🔍 Cari berdasarkan Nama atau Merk..." onkeyup="cariData()" />
-      </div>
-
-      <!-- Tabel Data -->
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>Nama</th>
-              <th>Merk</th>
-              <th>Size</th>
-              <th>Stok</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="tabelStok">
-            <tr>
-              <td colspan="5" style="text-align: center">Pilih kategori terlebih dahulu...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
     </div>
 
-    <!-- MODAL / POP-UP FORM EDIT -->
-    <div id="editModal" class="modal">
-      <div class="modal-content">
-        <h3 style="margin-top: 0; color: #0066cc">✏️ Edit Data Barang</h3>
-        <input type="hidden" id="editId" />
+    <!-- Fitur Pencarian -->
+    <div class="search-box">
+        <input type="text" id="cariBarang" placeholder="🔍 Cari berdasarkan Nama atau Merk..." onkeyup="cariData()">
+    </div>
+
+    <!-- Tabel Data -->
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nama</th>
+                    <th>Merk</th>
+                    <th>Size</th>
+                    <th>Stok</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="tabelStok">
+                <tr><td colspan="5" style="text-align:center;">Pilih kategori terlebih dahulu...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- MODAL / POP-UP FORM EDIT -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <h3 style="margin-top:0; color:#0066cc;">✏️ Edit Data Barang</h3>
+        <input type="hidden" id="editId">
         <div class="form-group">
-          <label>Nama Barang</label>
-          <input type="text" id="editNama" />
+            <label>Nama Barang</label>
+            <input type="text" id="editNama">
         </div>
         <div class="form-group">
-          <label>Merk</label>
-          <input type="text" id="editMerk" />
+            <label>Merk</label>
+            <input type="text" id="editMerk">
         </div>
         <div class="form-group">
-          <label>Size</label>
-          <input type="text" id="editSize" />
+            <label>Size</label>
+            <input type="text" id="editSize">
         </div>
         <div class="form-group">
-          <label>Jumlah Stok</label>
-          <input type="number" id="editJumlah" />
+            <label>Jumlah Stok</label>
+            <input type="number" id="editJumlah">
         </div>
         <div class="modal-buttons">
-          <button class="btn-secondary" onclick="tutupModal()">Batal</button>
-          <button class="btn-success" onclick="simpanPerubahan()">Simpan</button>
+            <button class="btn-secondary" onclick="tutupModal()">Batal</button>
+            <button class="btn-success" onclick="simpanPerubahan()">Simpan</button>
         </div>
-      </div>
     </div>
+</div>
 
-    <!-- KODE JAVASCRIPT & FIREBASE -->
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-      import { getDatabase, ref, push, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+<!-- KODE JAVASCRIPT & FIREBASE -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, push, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-      const firebaseConfig = {
+    const firebaseConfig = {
         apiKey: "AIzaSyDC2Va8LYKuoXYIZsr6Rkzxj65PT8vZFuQ",
         authDomain: "naratic-aquarium.firebaseapp.com",
         databaseURL: "https://naratic-aquarium-default-rtdb.firebaseio.com",
         projectId: "naratic-aquarium",
         storageBucket: "naratic-aquarium.firebasestorage.app",
         messagingSenderId: "126764911494",
-        appId: "1:126764911494:web:e89ff857ccd102edcdfa07",
-      };
+        appId: "1:126764911494:web:e89ff857ccd102edcdfa07"
+    };
 
-      const app = initializeApp(firebaseConfig);
-      const db = getDatabase(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    
+    // Variabel untuk melacak kategori apa yang sedang dibuka
+    let kategoriSaatIni = '';
+    let listenerFirebase = null;
+    let dataGlobal = {};
 
-      // Variabel untuk melacak kategori apa yang sedang dibuka
-      let kategoriSaatIni = "";
-      let listenerFirebase = null;
-      let dataGlobal = {};
-
-      // --- FUNGSI PINDAH HALAMAN & BACA DATA ---
-      window.bukaKategori = function (kodeKategori, namaKategoriTampil) {
+    // --- FUNGSI PINDAH HALAMAN & BACA DATA ---
+    window.bukaKategori = function(kodeKategori, namaKategoriTampil) {
         kategoriSaatIni = kodeKategori;
+        
+        document.getElementById('halamanDashboard').style.display = 'none';
+        document.getElementById('halamanInventaris').style.display = 'block';
+        document.getElementById('judulKategoriAktif').innerText = namaKategoriTampil;
+        
+        document.getElementById('tabelStok').innerHTML = '<tr><td colspan="5" style="text-align:center;">⏳ Mengambil data...</td></tr>';
 
-        // Sembunyikan Dashboard, Munculkan Inventaris
-        document.getElementById("halamanDashboard").style.display = "none";
-        document.getElementById("halamanInventaris").style.display = "block";
-        document.getElementById("judulKategoriAktif").innerText = namaKategoriTampil;
+        if(listenerFirebase) { listenerFirebase(); }
 
-        // Tampilkan loading
-        document.getElementById("tabelStok").innerHTML = '<tr><td colspan="5" style="text-align:center;">⏳ Mengambil data...</td></tr>';
-
-        // Hentikan pembacaan kategori sebelumnya (kalau ada)
-        if (listenerFirebase) {
-          listenerFirebase();
-        }
-
-        // Mulai baca data khusus untuk kategori yang dipilih
-        const dbRef = ref(db, "stok-naratic/" + kategoriSaatIni);
+        const dbRef = ref(db, 'stok-naratic/' + kategoriSaatIni);
         listenerFirebase = onValue(dbRef, (snapshot) => {
-          dataGlobal = snapshot.val() || {};
-          tampilkanData(dataGlobal);
+            dataGlobal = snapshot.val() || {};
+            tampilkanData(dataGlobal);
         });
-      };
+    };
 
-      window.kembaliKeDashboard = function () {
-        document.getElementById("halamanDashboard").style.display = "block";
-        document.getElementById("halamanInventaris").style.display = "none";
+    window.kembaliKeDashboard = function() {
+        document.getElementById('halamanDashboard').style.display = 'block';
+        document.getElementById('halamanInventaris').style.display = 'none';
+        
+        if(listenerFirebase) { listenerFirebase(); }
+    };
 
-        // Hentikan aliran data internet kalau lagi di beranda biar hemat kuota
-        if (listenerFirebase) {
-          listenerFirebase();
-        }
-      };
-
-      // --- FUNGSI TABEL & AKSI (Sama seperti sebelumnya, tapi pakai kategoriSaatIni) ---
-      function tampilkanData(data) {
-        let tabel = document.getElementById("tabelStok");
-        tabel.innerHTML = "";
+    // --- FUNGSI MENAMPILKAN TABEL SESUAI ABJAD ---
+    function tampilkanData(data) {
+        let tabel = document.getElementById('tabelStok');
+        tabel.innerHTML = ''; 
 
         if (Object.keys(data).length === 0) {
-          tabel.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#777;">Kategori ini masih kosong.</td></tr>';
-          return;
+            tabel.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#777;">Kategori ini masih kosong.</td></tr>';
+            return;
         }
 
+        // 1. Ubah data objek dari Firebase menjadi Array agar bisa diurutkan
+        let arrayData = [];
         for (let id in data) {
-          let item = data[id];
-          let merkItem = item.merk ? item.merk : "-";
+            arrayData.push({ id: id, item: data[id] });
+        }
 
-          tabel.innerHTML += `<tr>
+        // 2. Proses pengurutan (Sorting) A-Z berdasarkan Nama Barang
+        arrayData.sort((a, b) => {
+            let namaA = (a.item.nama || "").toLowerCase();
+            let namaB = (b.item.nama || "").toLowerCase();
+            if (namaA < namaB) return -1;
+            if (namaA > namaB) return 1;
+            return 0;
+        });
+
+        // 3. Tampilkan data yang sudah rapi ke tabel
+        arrayData.forEach((row) => {
+            let id = row.id;
+            let item = row.item;
+            let merkItem = item.merk ? item.merk : '-'; 
+
+            tabel.innerHTML += `<tr>
                 <td><strong>${item.nama}</strong></td>
                 <td align="center"><span style="background: #e6f2ff; padding: 4px 8px; border-radius: 6px; font-weight: bold; color: #004080; display: inline-block; font-size: 10px;">${merkItem}</span></td>
                 <td align="center">${item.size}</td>
                 <td align="center"><strong>${item.jumlah}</strong></td>
                 <td align="center">
-                    <button class="btn-edit" onclick="bukaModal('${id}', '${item.nama}', '${item.merk || ""}', '${item.size}', ${item.jumlah})">Ubah</button>
+                    <button class="btn-edit" onclick="bukaModal('${id}', '${item.nama}', '${item.merk || ''}', '${item.size}', ${item.jumlah})">Ubah</button>
                 </td>
             </tr>`;
+        });
+    }
+
+    // --- FUNGSI TAMBAH, UBAH, DAN CARI DATA ---
+    window.tambahBarang = function() {
+        let namaInput = document.getElementById('namaBarang').value;
+        let merkInput = document.getElementById('merkBarang').value;
+        let sizeInput = document.getElementById('sizeBarang').value;
+        let jumlahInput = document.getElementById('jumlahBarang').value;
+
+        if(namaInput === '' || merkInput === '' || sizeInput === '' || jumlahInput === '') {
+            alert('⚠️ Mohon lengkapi semua kolom!'); return;
         }
-      }
 
-      window.tambahBarang = function () {
-        let namaInput = document.getElementById("namaBarang").value;
-        let merkInput = document.getElementById("merkBarang").value;
-        let sizeInput = document.getElementById("sizeBarang").value;
-        let jumlahInput = document.getElementById("jumlahBarang").value;
-
-        if (namaInput === "" || merkInput === "" || sizeInput === "" || jumlahInput === "") {
-          alert("⚠️ Mohon lengkapi semua kolom!");
-          return;
-        }
-
-        // Menyimpan data sesuai dengan folder kategori masing-masing di Firebase
-        push(ref(db, "stok-naratic/" + kategoriSaatIni), {
-          nama: namaInput,
-          merk: merkInput,
-          size: sizeInput,
-          jumlah: parseInt(jumlahInput),
+        push(ref(db, 'stok-naratic/' + kategoriSaatIni), {
+            nama: namaInput,
+            merk: merkInput,
+            size: sizeInput,
+            jumlah: parseInt(jumlahInput)
         });
 
-        document.getElementById("namaBarang").value = "";
-        document.getElementById("merkBarang").value = "";
-        document.getElementById("sizeBarang").value = "";
-        document.getElementById("jumlahBarang").value = "";
-      };
+        document.getElementById('namaBarang').value = '';
+        document.getElementById('merkBarang').value = '';
+        document.getElementById('sizeBarang').value = '';
+        document.getElementById('jumlahBarang').value = '';
+    };
 
-      window.bukaModal = function (id, nama, merk, size, jumlah) {
-        document.getElementById("editId").value = id;
-        document.getElementById("editNama").value = nama;
-        document.getElementById("editMerk").value = merk;
-        document.getElementById("editSize").value = size;
-        document.getElementById("editJumlah").value = jumlah;
-        document.getElementById("editModal").style.display = "flex";
-      };
+    window.bukaModal = function(id, nama, merk, size, jumlah) {
+        document.getElementById('editId').value = id;
+        document.getElementById('editNama').value = nama;
+        document.getElementById('editMerk').value = merk;
+        document.getElementById('editSize').value = size;
+        document.getElementById('editJumlah').value = jumlah;
+        document.getElementById('editModal').style.display = 'flex';
+    };
 
-      window.tutupModal = function () {
-        document.getElementById("editModal").style.display = "none";
-      };
+    window.tutupModal = function() {
+        document.getElementById('editModal').style.display = 'none';
+    };
 
-      window.simpanPerubahan = function () {
-        let id = document.getElementById("editId").value;
-        let namaBaru = document.getElementById("editNama").value;
-        let merkBaru = document.getElementById("editMerk").value;
-        let sizeBaru = document.getElementById("editSize").value;
-        let jumlahBaru = document.getElementById("editJumlah").value;
+    window.simpanPerubahan = function() {
+        let id = document.getElementById('editId').value;
+        let namaBaru = document.getElementById('editNama').value;
+        let merkBaru = document.getElementById('editMerk').value;
+        let sizeBaru = document.getElementById('editSize').value;
+        let jumlahBaru = document.getElementById('editJumlah').value;
 
-        if (namaBaru === "" || merkBaru === "" || sizeBaru === "" || jumlahBaru === "") {
-          alert("⚠️ Kolom edit tidak boleh kosong!");
-          return;
+        if(namaBaru === '' || merkBaru === '' || sizeBaru === '' || jumlahBaru === '') {
+            alert('⚠️ Kolom edit tidak boleh kosong!'); return;
         }
 
-        // Memperbarui data sesuai kategori yang terbuka
-        update(ref(db, "stok-naratic/" + kategoriSaatIni + "/" + id), {
-          nama: namaBaru,
-          merk: merkBaru,
-          size: sizeBaru,
-          jumlah: parseInt(jumlahBaru),
+        update(ref(db, 'stok-naratic/' + kategoriSaatIni + '/' + id), {
+            nama: namaBaru,
+            merk: merkBaru,
+            size: sizeBaru,
+            jumlah: parseInt(jumlahBaru)
         });
 
         tutupModal();
-      };
+    };
 
-      window.cariData = function () {
-        let kataKunci = document.getElementById("cariBarang").value.toLowerCase();
+    window.cariData = function() {
+        let kataKunci = document.getElementById('cariBarang').value.toLowerCase();
         let dataHasilPencarian = {};
-
+        
         for (let id in dataGlobal) {
-          let item = dataGlobal[id];
-          let namaBarang = item.nama ? item.nama.toLowerCase() : "";
-          let merkBarang = item.merk ? item.merk.toLowerCase() : "";
-
-          if (namaBarang.includes(kataKunci) || merkBarang.includes(kataKunci)) {
-            dataHasilPencarian[id] = item;
-          }
+            let item = dataGlobal[id];
+            let namaBarang = item.nama ? item.nama.toLowerCase() : '';
+            let merkBarang = item.merk ? item.merk.toLowerCase() : '';
+            
+            if (namaBarang.includes(kataKunci) || merkBarang.includes(kataKunci)) {
+                dataHasilPencarian[id] = item;
+            }
         }
         tampilkanData(dataHasilPencarian);
-      };
-    </script>
-  </body>
+    };
+</script>
+
+</body>
 </html>
