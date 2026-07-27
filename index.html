@@ -26,30 +26,23 @@
         .judul-dashboard { color: #0066cc; text-align: center; margin-top: 10px; font-size: 28px; margin-bottom: 5px; }
         .subjudul-dashboard { text-align: center; color: #666; font-size: 14px; margin-top: 0; margin-bottom: 30px; letter-spacing: 1px; text-transform: uppercase;}
         
-        .menu-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
+        .menu-grid { display: flex; flex-direction: column; gap: 15px; }
+        
         .btn-menu {
-            background: linear-gradient(135deg, #0066cc, #0088ff);
-            color: white;
-            border: none;
-            padding: 20px;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 102, 204, 0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            background: linear-gradient(135deg, #0066cc, #0088ff); color: white; border: none; padding: 20px;
+            border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 102, 204, 0.3); transition: transform 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
         .btn-menu:active { transform: scale(0.98); }
 
-        /* --- GAYA HALAMAN INVENTARIS --- */
+        .btn-riwayat {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+            margin-top: 10px;
+        }
+
+        /* --- GAYA HALAMAN INVENTARIS & RIWAYAT --- */
         .header-inventaris { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 2px solid #e6f2ff; padding-bottom: 15px;}
         .btn-kembali { background-color: #f1f3f5; color: #333; border: 1px solid #ccc; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .judul-kategori { color: #004080; margin: 0; font-size: 20px; }
@@ -70,7 +63,7 @@
         .search-box { margin-bottom: 20px; }
         
         /* Tabel */
-        .table-responsive { width: 100%; }
+        .table-responsive { width: 100%; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; table-layout: auto; }
         th, td { border: 1px solid #e1e1e1; padding: 10px 8px; text-align: left; font-size: 13px; word-wrap: break-word;}
         th { background-color: #0066cc; color: white; font-weight: 600; text-align: center; }
@@ -117,47 +110,36 @@
         <button class="btn-menu" onclick="bukaKategori('aquarium', 'Aquarium')">
             🐟 Aquarium
         </button>
+        
+        <!-- Tombol Baru Untuk Melihat Riwayat -->
+        <button class="btn-menu btn-riwayat" onclick="bukaRiwayat()">
+            📜 Riwayat Keluar & Masuk
+        </button>
     </div>
 </div>
 
 <!-- ========================================== -->
-<!-- 2. HALAMAN INVENTARIS (Form & Tabel)       -->
+<!-- 2. HALAMAN INVENTARIS (Form & Tabel Stok)  -->
 <!-- ========================================== -->
 <div id="halamanInventaris" class="container" style="display: none;">
-    
     <div class="header-inventaris">
         <button class="btn-kembali" onclick="kembaliKeDashboard()">⬅ Kembali</button>
         <h2 id="judulKategoriAktif" class="judul-kategori">Nama Kategori</h2>
     </div>
     
-    <!-- Form Tambah Barang -->
     <div class="form-section">
         <h3 style="margin-top: 0; font-size: 16px; color: #004080;">➕ Tambah Barang Baru</h3>
-        <div class="form-group">
-            <label>Nama Barang</label>
-            <input type="text" id="namaBarang" placeholder="Cth: Sambungan L / Mesin Filter">
-        </div>
-        <div class="form-group">
-            <label>Merk Barang</label>
-            <input type="text" id="merkBarang" placeholder="Cth: Amara / Polos">
-        </div>
-        <div class="form-group">
-            <label>Size / Kapasitas / Ukuran</label>
-            <input type="text" id="sizeBarang" placeholder="Cth: 1/2 inch atau 50cm">
-        </div>
-        <div class="form-group">
-            <label>Jumlah Stok</label>
-            <input type="number" id="jumlahBarang" placeholder="Cth: 15">
-        </div>
+        <div class="form-group"><label>Nama Barang</label><input type="text" id="namaBarang"></div>
+        <div class="form-group"><label>Merk</label><input type="text" id="merkBarang"></div>
+        <div class="form-group"><label>Size</label><input type="text" id="sizeBarang"></div>
+        <div class="form-group"><label>Jumlah Stok</label><input type="number" id="jumlahBarang"></div>
         <button class="btn-primary" onclick="tambahBarang()">Simpan Barang ke Stok</button>
     </div>
 
-    <!-- Fitur Pencarian -->
     <div class="search-box">
         <input type="text" id="cariBarang" placeholder="🔍 Cari berdasarkan Nama atau Merk..." onkeyup="cariData()">
     </div>
 
-    <!-- Tabel Data -->
     <div class="table-responsive">
         <table>
             <thead>
@@ -176,27 +158,45 @@
     </div>
 </div>
 
-<!-- MODAL / POP-UP FORM EDIT -->
+<!-- ========================================== -->
+<!-- 3. HALAMAN RIWAYAT (Stok Keluar Masuk)     -->
+<!-- ========================================== -->
+<div id="halamanRiwayat" class="container" style="display: none;">
+    <div class="header-inventaris">
+        <button class="btn-kembali" onclick="kembaliKeDashboard()">⬅ Kembali</button>
+        <h2 class="judul-kategori" style="color: #28a745;">📜 Riwayat Stok</h2>
+    </div>
+    
+    <div class="table-responsive">
+        <table>
+            <thead style="background-color: #28a745;">
+                <tr>
+                    <th style="background-color: #28a745;">Waktu</th>
+                    <th style="background-color: #28a745;">Barang (Kategori)</th>
+                    <th style="background-color: #28a745;">Keterangan</th>
+                </tr>
+            </thead>
+            <tbody id="tabelRiwayat">
+                <tr><td colspan="3" style="text-align:center;">⏳ Mengambil data riwayat...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MODAL POP-UP EDIT -->
+<!-- ========================================== -->
 <div id="editModal" class="modal">
     <div class="modal-content">
         <h3 style="margin-top:0; color:#0066cc;">✏️ Edit Data Barang</h3>
         <input type="hidden" id="editId">
-        <div class="form-group">
-            <label>Nama Barang</label>
-            <input type="text" id="editNama">
-        </div>
-        <div class="form-group">
-            <label>Merk</label>
-            <input type="text" id="editMerk">
-        </div>
-        <div class="form-group">
-            <label>Size</label>
-            <input type="text" id="editSize">
-        </div>
-        <div class="form-group">
-            <label>Jumlah Stok</label>
-            <input type="number" id="editJumlah">
-        </div>
+        <input type="hidden" id="editStokLama"> <!-- Menyimpan stok lama untuk dihitung selisihnya -->
+        
+        <div class="form-group"><label>Nama Barang</label><input type="text" id="editNama"></div>
+        <div class="form-group"><label>Merk</label><input type="text" id="editMerk"></div>
+        <div class="form-group"><label>Size</label><input type="text" id="editSize"></div>
+        <div class="form-group"><label>Jumlah Stok</label><input type="number" id="editJumlah"></div>
+        
         <div class="modal-buttons">
             <button class="btn-secondary" onclick="tutupModal()">Batal</button>
             <button class="btn-success" onclick="simpanPerubahan()">Simpan</button>
@@ -222,68 +222,52 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     
-    // Variabel untuk melacak kategori apa yang sedang dibuka
     let kategoriSaatIni = '';
     let listenerFirebase = null;
     let dataGlobal = {};
 
-    // --- FUNGSI PINDAH HALAMAN & BACA DATA ---
+    // --- NAVIGASI ---
+    window.kembaliKeDashboard = function() {
+        document.getElementById('halamanDashboard').style.display = 'block';
+        document.getElementById('halamanInventaris').style.display = 'none';
+        document.getElementById('halamanRiwayat').style.display = 'none';
+        if(listenerFirebase) { listenerFirebase(); }
+    };
+
+    // --- HALAMAN KATEGORI BARANG ---
     window.bukaKategori = function(kodeKategori, namaKategoriTampil) {
         kategoriSaatIni = kodeKategori;
-        
         document.getElementById('halamanDashboard').style.display = 'none';
+        document.getElementById('halamanRiwayat').style.display = 'none';
         document.getElementById('halamanInventaris').style.display = 'block';
         document.getElementById('judulKategoriAktif').innerText = namaKategoriTampil;
-        
         document.getElementById('tabelStok').innerHTML = '<tr><td colspan="5" style="text-align:center;">⏳ Mengambil data...</td></tr>';
 
         if(listenerFirebase) { listenerFirebase(); }
-
-        const dbRef = ref(db, 'stok-naratic/' + kategoriSaatIni);
-        listenerFirebase = onValue(dbRef, (snapshot) => {
+        listenerFirebase = onValue(ref(db, 'stok-naratic/' + kategoriSaatIni), (snapshot) => {
             dataGlobal = snapshot.val() || {};
             tampilkanData(dataGlobal);
         });
     };
 
-    window.kembaliKeDashboard = function() {
-        document.getElementById('halamanDashboard').style.display = 'block';
-        document.getElementById('halamanInventaris').style.display = 'none';
-        
-        if(listenerFirebase) { listenerFirebase(); }
-    };
-
-    // --- FUNGSI MENAMPILKAN TABEL SESUAI ABJAD ---
     function tampilkanData(data) {
         let tabel = document.getElementById('tabelStok');
         tabel.innerHTML = ''; 
 
         if (Object.keys(data).length === 0) {
-            tabel.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#777;">Kategori ini masih kosong.</td></tr>';
-            return;
+            tabel.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#777;">Kategori ini masih kosong.</td></tr>'; return;
         }
 
-        // 1. Ubah data objek dari Firebase menjadi Array agar bisa diurutkan
         let arrayData = [];
-        for (let id in data) {
-            arrayData.push({ id: id, item: data[id] });
-        }
-
-        // 2. Proses pengurutan (Sorting) A-Z berdasarkan Nama Barang
+        for (let id in data) { arrayData.push({ id: id, item: data[id] }); }
         arrayData.sort((a, b) => {
             let namaA = (a.item.nama || "").toLowerCase();
             let namaB = (b.item.nama || "").toLowerCase();
-            if (namaA < namaB) return -1;
-            if (namaA > namaB) return 1;
-            return 0;
+            return namaA < namaB ? -1 : (namaA > namaB ? 1 : 0);
         });
 
-        // 3. Tampilkan data yang sudah rapi ke tabel
         arrayData.forEach((row) => {
-            let id = row.id;
-            let item = row.item;
-            let merkItem = item.merk ? item.merk : '-'; 
-
+            let id = row.id; let item = row.item; let merkItem = item.merk ? item.merk : '-'; 
             tabel.innerHTML += `<tr>
                 <td><strong>${item.nama}</strong></td>
                 <td align="center"><span style="background: #e6f2ff; padding: 4px 8px; border-radius: 6px; font-weight: bold; color: #004080; display: inline-block; font-size: 10px;">${merkItem}</span></td>
@@ -296,28 +280,39 @@
         });
     }
 
-    // --- FUNGSI TAMBAH, UBAH, DAN CARI DATA ---
+    // --- FITUR MENCATAT RIWAYAT (LOG) ---
+    function catatRiwayat(namaBarang, merkBarang, kategoriBarang, keterangan) {
+        push(ref(db, 'riwayat-stok'), {
+            waktu_angka: new Date().getTime(), // Untuk sorting waktu terbaru
+            waktu_teks: new Date().toLocaleString('id-ID'), // Tampilan tanggal & jam
+            nama: namaBarang,
+            merk: merkBarang,
+            kategori: kategoriBarang,
+            keterangan: keterangan
+        });
+    }
+
     window.tambahBarang = function() {
         let namaInput = document.getElementById('namaBarang').value;
         let merkInput = document.getElementById('merkBarang').value;
         let sizeInput = document.getElementById('sizeBarang').value;
-        let jumlahInput = document.getElementById('jumlahBarang').value;
+        let jumlahInput = parseInt(document.getElementById('jumlahBarang').value);
+        let namaKategori = document.getElementById('judulKategoriAktif').innerText;
 
-        if(namaInput === '' || merkInput === '' || sizeInput === '' || jumlahInput === '') {
+        if(!namaInput || !merkInput || !sizeInput || isNaN(jumlahInput)) {
             alert('⚠️ Mohon lengkapi semua kolom!'); return;
         }
 
         push(ref(db, 'stok-naratic/' + kategoriSaatIni), {
-            nama: namaInput,
-            merk: merkInput,
-            size: sizeInput,
-            jumlah: parseInt(jumlahInput)
+            nama: namaInput, merk: merkInput, size: sizeInput, jumlah: jumlahInput
         });
 
-        document.getElementById('namaBarang').value = '';
-        document.getElementById('merkBarang').value = '';
-        document.getElementById('sizeBarang').value = '';
-        document.getElementById('jumlahBarang').value = '';
+        // Catat sebagai barang masuk baru
+        catatRiwayat(namaInput, merkInput, namaKategori, `Barang Baru Masuk (+${jumlahInput})`);
+
+        document.getElementById('namaBarang').value = ''; document.getElementById('merkBarang').value = '';
+        document.getElementById('sizeBarang').value = ''; document.getElementById('jumlahBarang').value = '';
+        alert('✅ Barang berhasil ditambah!');
     };
 
     window.bukaModal = function(id, nama, merk, size, jumlah) {
@@ -326,29 +321,36 @@
         document.getElementById('editMerk').value = merk;
         document.getElementById('editSize').value = size;
         document.getElementById('editJumlah').value = jumlah;
+        document.getElementById('editStokLama').value = jumlah; // Simpan stok lama secara tersembunyi
         document.getElementById('editModal').style.display = 'flex';
     };
 
-    window.tutupModal = function() {
-        document.getElementById('editModal').style.display = 'none';
-    };
+    window.tutupModal = function() { document.getElementById('editModal').style.display = 'none'; };
 
     window.simpanPerubahan = function() {
         let id = document.getElementById('editId').value;
         let namaBaru = document.getElementById('editNama').value;
         let merkBaru = document.getElementById('editMerk').value;
         let sizeBaru = document.getElementById('editSize').value;
-        let jumlahBaru = document.getElementById('editJumlah').value;
+        let jumlahBaru = parseInt(document.getElementById('editJumlah').value);
+        
+        let stokLama = parseInt(document.getElementById('editStokLama').value);
+        let namaKategori = document.getElementById('judulKategoriAktif').innerText;
 
-        if(namaBaru === '' || merkBaru === '' || sizeBaru === '' || jumlahBaru === '') {
+        if(!namaBaru || !merkBaru || !sizeBaru || isNaN(jumlahBaru)) {
             alert('⚠️ Kolom edit tidak boleh kosong!'); return;
         }
 
+        // Hitung selisih untuk dicatat di riwayat
+        let selisih = jumlahBaru - stokLama;
+        if (selisih > 0) {
+            catatRiwayat(namaBaru, merkBaru, namaKategori, `Masuk (+${selisih})`);
+        } else if (selisih < 0) {
+            catatRiwayat(namaBaru, merkBaru, namaKategori, `Keluar (${selisih})`);
+        }
+
         update(ref(db, 'stok-naratic/' + kategoriSaatIni + '/' + id), {
-            nama: namaBaru,
-            merk: merkBaru,
-            size: sizeBaru,
-            jumlah: parseInt(jumlahBaru)
+            nama: namaBaru, merk: merkBaru, size: sizeBaru, jumlah: jumlahBaru
         });
 
         tutupModal();
@@ -357,18 +359,57 @@
     window.cariData = function() {
         let kataKunci = document.getElementById('cariBarang').value.toLowerCase();
         let dataHasilPencarian = {};
-        
         for (let id in dataGlobal) {
             let item = dataGlobal[id];
-            let namaBarang = item.nama ? item.nama.toLowerCase() : '';
-            let merkBarang = item.merk ? item.merk.toLowerCase() : '';
-            
-            if (namaBarang.includes(kataKunci) || merkBarang.includes(kataKunci)) {
+            if ((item.nama || "").toLowerCase().includes(kataKunci) || (item.merk || "").toLowerCase().includes(kataKunci)) {
                 dataHasilPencarian[id] = item;
             }
         }
         tampilkanData(dataHasilPencarian);
     };
+
+    // --- HALAMAN RIWAYAT KELUAR MASUK ---
+    window.bukaRiwayat = function() {
+        document.getElementById('halamanDashboard').style.display = 'none';
+        document.getElementById('halamanInventaris').style.display = 'none';
+        document.getElementById('halamanRiwayat').style.display = 'block';
+        document.getElementById('tabelRiwayat').innerHTML = '<tr><td colspan="3" style="text-align:center;">⏳ Mengambil data riwayat...</td></tr>';
+
+        if(listenerFirebase) { listenerFirebase(); }
+        
+        listenerFirebase = onValue(ref(db, 'riwayat-stok'), (snapshot) => {
+            let data = snapshot.val() || {};
+            tampilkanRiwayat(data);
+        });
+    };
+
+    function tampilkanRiwayat(data) {
+        let tabel = document.getElementById('tabelRiwayat');
+        tabel.innerHTML = ''; 
+
+        if (Object.keys(data).length === 0) {
+            tabel.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#777;">Belum ada aktivitas stok masuk/keluar.</td></tr>'; return;
+        }
+
+        let arrayData = [];
+        for (let id in data) { arrayData.push(data[id]); }
+        
+        // Urutkan riwayat dari yang paling BARU (menurun berdasarkan waktu)
+        arrayData.sort((a, b) => b.waktu_angka - a.waktu_angka);
+
+        arrayData.forEach((item) => {
+            let warnaKeterangan = item.keterangan.includes('Keluar') ? '#cc0000' : '#28a745'; // Keluar=Merah, Masuk=Hijau
+            
+            tabel.innerHTML += `<tr>
+                <td style="font-size: 10px; color:#666;">${item.waktu_teks}</td>
+                <td>
+                    <strong>${item.nama}</strong><br>
+                    <span style="font-size: 10px; color: #004080; font-weight:bold;">[${item.merk}]</span> - <span style="font-size: 10px; color: #888;">${item.kategori}</span>
+                </td>
+                <td style="color: ${warnaKeterangan}; font-weight: bold; text-align: center;">${item.keterangan}</td>
+            </tr>`;
+        });
+    }
 </script>
 
 </body>
