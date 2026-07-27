@@ -63,11 +63,11 @@
         
         .search-box { margin-bottom: 20px; }
         
-        /* Gaya untuk Tabel */
-        .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 500px; }
-        th, td { border: 1px solid #e1e1e1; padding: 12px 10px; text-align: left; font-size: 14px;}
-        th { background-color: #0066cc; color: white; font-weight: 600; }
+        /* Gaya untuk Tabel (Diperbarui agar pas di HP) */
+        .table-responsive { width: 100%; }
+        table { width: 100%; border-collapse: collapse; table-layout: auto; }
+        th, td { border: 1px solid #e1e1e1; padding: 10px 8px; text-align: left; font-size: 13px; word-wrap: break-word;}
+        th { background-color: #0066cc; color: white; font-weight: 600; text-align: center; }
         tr:nth-child(even) { background-color: #f9fbfd; }
         
         /* Tombol Aksi */
@@ -94,6 +94,16 @@
         .modal-buttons { display: flex; gap: 10px; margin-top: 15px; }
         .btn-secondary { background-color: #6c757d; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 50%; font-weight: bold;}
         .btn-success { background-color: #28a745; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 50%; font-weight: bold;}
+
+        /* --- KODE PINTAR UNTUK LAYAR HP --- */
+        @media (max-width: 500px) {
+            body { padding: 10px; }
+            .container { padding: 15px 10px; }
+            h2 { font-size: 20px; }
+            th, td { padding: 6px 4px; font-size: 11px; }
+            .btn-edit { padding: 5px 8px; font-size: 10px; }
+            .badge-merk { padding: 2px 4px !important; font-size: 10px !important; }
+        }
     </style>
 </head>
 <body>
@@ -125,7 +135,7 @@
 
     <!-- Fitur Pencarian -->
     <div class="search-box">
-        <input type="text" id="cariBarang" placeholder="🔍 Cari berdasarkan Nama Barang atau Merk..." onkeyup="cariData()">
+        <input type="text" id="cariBarang" placeholder="🔍 Cari berdasarkan Nama atau Merk..." onkeyup="cariData()">
     </div>
 
     <!-- Tabel Data -->
@@ -133,7 +143,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>Nama Barang</th>
+                    <th>Nama</th>
                     <th>Merk</th>
                     <th>Size</th>
                     <th>Stok</th>
@@ -216,10 +226,10 @@
 
             tabel.innerHTML += `<tr>
                 <td><strong>${item.nama}</strong></td>
-                <td><span style="background: #e6f2ff; padding: 4px 8px; border-radius: 6px; font-weight: bold; color: #004080;">${merkItem}</span></td>
-                <td>${item.size}</td>
-                <td style="font-size: 15px;"><strong>${item.jumlah}</strong></td>
-                <td>
+                <td align="center"><span class="badge-merk" style="background: #e6f2ff; padding: 4px 8px; border-radius: 6px; font-weight: bold; color: #004080; display: inline-block;">${merkItem}</span></td>
+                <td align="center">${item.size}</td>
+                <td align="center"><strong>${item.jumlah}</strong></td>
+                <td align="center">
                     <button class="btn-edit" onclick="bukaModal('${id}', '${item.nama}', '${item.merk || ''}', '${item.size}', ${item.jumlah})">Ubah</button>
                 </td>
             </tr>`;
