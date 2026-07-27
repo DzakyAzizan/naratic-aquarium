@@ -3,84 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Naratic Aquarium - Stok Firebase</title>
+    <title>Naratic Aquarium - Stok Opname Pro</title>
     <style>
-        /* Desain Tema Aquarium */
+        /* Desain Tema Aquarium & Modern Dashboard */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #e0f7fa; 
+            background-color: #f0f8ff; 
             margin: 0; 
             padding: 15px; 
             color: #333;
         }
         .container { 
             background: white; 
-            padding: 20px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
-            max-width: 650px;
+            padding: 25px; 
+            border-radius: 16px; 
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08); 
+            max-width: 700px;
             margin: auto;
         }
-        h2 { color: #00838f; text-align: center; margin-top: 0; }
+        h2 { 
+            color: #0066cc; 
+            text-align: center; 
+            margin-top: 0; 
+            font-size: 24px;
+        }
         
-        .form-group { margin-bottom: 10px; }
+        .form-section {
+            background: #e6f2ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-size: 13px; font-weight: bold; color: #004080; margin-bottom: 4px; }
         input { 
             width: 100%; 
-            padding: 12px; 
-            margin-top: 5px; 
+            padding: 10px 12px; 
             box-sizing: border-box; 
             border-radius: 8px; 
-            border: 1px solid #b2ebf2; 
+            border: 1px solid #b3d1ff; 
             font-size: 14px;
+            outline: none;
         }
-        button { 
+        input:focus { border-color: #0066cc; box-shadow: 0 0 5px rgba(0,102,204,0.3); }
+        
+        .btn-primary { 
             width: 100%; 
             padding: 12px; 
-            margin-top: 10px; 
-            background-color: #00acc1; 
+            background-color: #0066cc; 
             color: white; 
             border: none; 
             border-radius: 8px; 
             font-weight: bold; 
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
+            transition: background 0.2s;
         }
-        button:active { background-color: #00838f; }
+        .btn-primary:hover { background-color: #004080; }
         
-        .search-box { margin-top: 25px; margin-bottom: 15px; border-top: 2px dashed #b2ebf2; padding-top: 15px;}
+        .search-box { margin-bottom: 20px; }
         
+        /* Gaya untuk Tabel */
         .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 450px; }
-        th, td { border: 1px solid #e0e0e0; padding: 12px 10px; text-align: left; font-size: 14px;}
-        th { background-color: #00838f; color: white; }
+        table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        th, td { border: 1px solid #e1e1e1; padding: 12px 10px; text-align: left; font-size: 14px;}
+        th { background-color: #0066cc; color: white; font-weight: 600; }
+        tr:nth-child(even) { background-color: #f9fbfd; }
         
-        .btn-edit { background-color: #ffa000; padding: 6px 10px; margin: 0; font-size: 12px; width: auto; color: white; border: none; border-radius: 4px; cursor: pointer;}
-        .btn-hapus { background-color: #d32f2f; padding: 6px 10px; margin: 0; margin-top: 5px; font-size: 12px; width: auto; color: white; border: none; border-radius: 4px; cursor: pointer;}
+        /* Tombol Aksi */
+        .btn-edit { background-color: #ff9900; padding: 6px 14px; font-size: 12px; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;}
+        .btn-edit:hover { background-color: #cc7a00; }
+
+        /* Modal Pop-up Edit Rapi */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; top: 0; width: 100%; height: 100%; 
+            background-color: rgba(0,0,0,0.5);
+            align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-secondary { background-color: #6c757d; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 50%; font-weight: bold;}
+        .btn-success { background-color: #28a745; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 50%; font-weight: bold;}
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🌊 Naratic Aquarium 🌊<br><small style="font-size: 14px; color: #555;">Sistem Stok Realtime (Online)</small></h2>
+    <h2>🌊 Naratic Aquarium 🌊<br><small style="font-size: 13px; color: #666; font-weight: normal;">Sistem Stok Opname Realtime & Terstruktur</small></h2>
     
-    <!-- Form Tambah Barang dengan Kolom Merk -->
-    <div class="form-group">
-        <input type="text" id="namaBarang" placeholder="Nama Barang (Cth: Pompa Air)">
+    <!-- Form Tambah Barang -->
+    <div class="form-section">
+        <h3 style="margin-top: 0; font-size: 16px; color: #004080;">➕ Tambah Barang Baru</h3>
+        <div class="form-group">
+            <label>Nama Barang</label>
+            <input type="text" id="namaBarang" placeholder="Cth: Pompa Air / Filter Gantung">
+        </div>
+        <div class="form-group">
+            <label>Merk Barang</label>
+            <input type="text" id="merkBarang" placeholder="Cth: Amara / Yamano / Resun">
+        </div>
+        <div class="form-group">
+            <label>Size / Kapasitas / Ukuran</label>
+            <input type="text" id="sizeBarang" placeholder="Cth: 1000 L/H atau 50cm">
+        </div>
+        <div class="form-group">
+            <label>Jumlah Stok</label>
+            <input type="number" id="jumlahBarang" placeholder="Cth: 15">
+        </div>
+        <button class="btn-primary" onclick="tambahBarang()">Simpan Barang ke Stok</button>
     </div>
-    <div class="form-group">
-        <input type="text" id="merkBarang" placeholder="Merk Barang (Cth: Amara / Yamano)">
-    </div>
-    <div class="form-group">
-        <input type="text" id="sizeBarang" placeholder="Size/Kapasitas (Cth: 1000 L/H atau 50cm)">
-    </div>
-    <div class="form-group">
-        <input type="number" id="jumlahBarang" placeholder="Jumlah Stok (Cth: 12)">
-    </div>
-    <button onclick="tambahBarang()">➕ Tambah Stok Barang</button>
 
-    <!-- Fitur Pencarian (Bisa cari berdasarkan Nama atau Merk) -->
+    <!-- Fitur Pencarian -->
     <div class="search-box">
-        <input type="text" id="cariBarang" placeholder="🔍 Cari nama barang atau merk..." onkeyup="cariData()">
+        <input type="text" id="cariBarang" placeholder="🔍 Cari berdasarkan Nama Barang atau Merk..." onkeyup="cariData()">
     </div>
 
     <!-- Tabel Data -->
@@ -102,13 +147,39 @@
     </div>
 </div>
 
+<!-- MODAL / POP-UP FORM EDIT -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <h3 style="margin-top:0; color:#0066cc;">✏️ Edit Data Barang</h3>
+        <input type="hidden" id="editId">
+        <div class="form-group">
+            <label>Nama Barang</label>
+            <input type="text" id="editNama">
+        </div>
+        <div class="form-group">
+            <label>Merk</label>
+            <input type="text" id="editMerk">
+        </div>
+        <div class="form-group">
+            <label>Size</label>
+            <input type="text" id="editSize">
+        </div>
+        <div class="form-group">
+            <label>Jumlah Stok</label>
+            <input type="number" id="editJumlah">
+        </div>
+        <div class="modal-buttons">
+            <button class="btn-secondary" onclick="tutupModal()">Batal</button>
+            <button class="btn-success" onclick="simpanPerubahan()">Simpan</button>
+        </div>
+    </div>
+</div>
+
 <!-- KODE JAVASCRIPT & FIREBASE -->
 <script type="module">
-    // Import fungsi Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, push, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // Konfigurasi Database Milikmu
     const firebaseConfig = {
         apiKey: "AIzaSyDC2Va8LYKuoXYIZsr6Rkzxj65PT8vZFuQ",
         authDomain: "naratic-aquarium.firebaseapp.com",
@@ -119,27 +190,23 @@
         appId: "1:126764911494:web:e89ff857ccd102edcdfa07"
     };
 
-    // Memulai Firebase
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const dbRef = ref(db, 'stok-naratic');
 
-    // Variabel untuk menyimpan data sementara agar bisa dicari
     let dataGlobal = {};
 
-    // 1. Fungsi Membaca Data Secara Otomatis (Realtime)
     onValue(dbRef, (snapshot) => {
         dataGlobal = snapshot.val() || {};
         tampilkanData(dataGlobal);
     });
 
-    // 2. Fungsi Menampilkan Data ke Tabel
     function tampilkanData(data) {
         let tabel = document.getElementById('tabelStok');
         tabel.innerHTML = ''; 
 
         if (Object.keys(data).length === 0) {
-            tabel.innerHTML = '<tr><td colspan="5" style="text-align:center;">Data masih kosong.</td></tr>';
+            tabel.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#777;">Belum ada data stok barang.</td></tr>';
             return;
         }
 
@@ -148,19 +215,17 @@
             let merkItem = item.merk ? item.merk : '-'; 
 
             tabel.innerHTML += `<tr>
-                <td>${item.nama}</td>
-                <td><span style="background: #e0f7fa; padding: 3px 8px; border-radius: 4px; font-weight: bold; color: #00838f;">${merkItem}</span></td>
+                <td><strong>${item.nama}</strong></td>
+                <td><span style="background: #e6f2ff; padding: 4px 8px; border-radius: 6px; font-weight: bold; color: #004080;">${merkItem}</span></td>
                 <td>${item.size}</td>
-                <td style="font-size: 16px;"><strong>${item.jumlah}</strong></td>
+                <td style="font-size: 15px;"><strong>${item.jumlah}</strong></td>
                 <td>
-                    <button class="btn-edit" onclick="ubahData('${id}', '${item.nama}', '${merkItem}', '${item.size}', ${item.jumlah})">Ubah</button>
-                    <button class="btn-hapus" onclick="hapusBarang('${id}', '${item.nama} (${merkItem})')">Hapus</button>
+                    <button class="btn-edit" onclick="bukaModal('${id}', '${item.nama}', '${item.merk || ''}', '${item.size}', ${item.jumlah})">Ubah</button>
                 </td>
             </tr>`;
         }
     }
 
-    // 3. Fungsi Tambah Barang
     window.tambahBarang = function() {
         let namaInput = document.getElementById('namaBarang').value;
         let merkInput = document.getElementById('merkBarang').value;
@@ -168,7 +233,7 @@
         let jumlahInput = document.getElementById('jumlahBarang').value;
 
         if(namaInput === '' || merkInput === '' || sizeInput === '' || jumlahInput === '') {
-            alert('⚠️ Lengkapi semua data (Nama, Merk, Size, dan Jumlah) terlebih dahulu!');
+            alert('⚠️ Mohon lengkapi semua kolom (Nama, Merk, Size, dan Jumlah)!');
             return;
         }
 
@@ -179,47 +244,48 @@
             jumlah: parseInt(jumlahInput)
         });
 
-        // Kosongkan form setelah input
         document.getElementById('namaBarang').value = '';
         document.getElementById('merkBarang').value = '';
         document.getElementById('sizeBarang').value = '';
         document.getElementById('jumlahBarang').value = '';
     };
 
-    // 4. Fungsi Ubah Data Lengkap (Nama, Merk, Size, Stok)
-    window.ubahData = function(id, namaLama, merkLama, sizeLama, jumlahLama) {
-        let namaBaru = prompt("Ubah Nama Barang:", namaLama);
-        if (namaBaru === null) return; // Batal jika pencet cancel
+    window.bukaModal = function(id, nama, merk, size, jumlah) {
+        document.getElementById('editId').value = id;
+        document.getElementById('editNama').value = nama;
+        document.getElementById('editMerk').value = merk;
+        document.getElementById('editSize').value = size;
+        document.getElementById('editJumlah').value = jumlah;
+        
+        document.getElementById('editModal').style.display = 'flex';
+    };
 
-        let merkBaru = prompt("Ubah Merk Barang:", merkLama);
-        if (merkBaru === null) return;
+    window.tutupModal = function() {
+        document.getElementById('editModal').style.display = 'none';
+    };
 
-        let sizeBaru = prompt("Ubah Size/Kapasitas:", sizeLama);
-        if (sizeBaru === null) return;
+    window.simpanPerubahan = function() {
+        let id = document.getElementById('editId').value;
+        let namaBaru = document.getElementById('editNama').value;
+        let merkBaru = document.getElementById('editMerk').value;
+        let sizeBaru = document.getElementById('editSize').value;
+        let jumlahBaru = document.getElementById('editJumlah').value;
 
-        let jumlahBaru = prompt("Ubah Jumlah Stok:", jumlahLama);
-        if (jumlahBaru === null || jumlahBaru === "") return;
+        if(namaBaru === '' || merkBaru === '' || sizeBaru === '' || jumlahBaru === '') {
+            alert('⚠️ Kolom edit tidak boleh kosong!');
+            return;
+        }
 
-        // Kirim update lengkap ke Firebase
         update(ref(db, 'stok-naratic/' + id), {
             nama: namaBaru,
             merk: merkBaru,
             size: sizeBaru,
             jumlah: parseInt(jumlahBaru)
         });
-        
-        alert('✅ Data berhasil diperbarui!');
+
+        tutupModal();
     };
 
-    // 5. Fungsi Hapus Barang
-    window.hapusBarang = function(id, infoBarang) {
-        let konfirmasi = confirm(`Yakin ingin menghapus "${infoBarang}" secara permanen?`);
-        if(konfirmasi) {
-            remove(ref(db, 'stok-naratic/' + id));
-        }
-    };
-
-    // 6. Fungsi Pencarian (Berdasarkan Nama ATAU Merk)
     window.cariData = function() {
         let kataKunci = document.getElementById('cariBarang').value.toLowerCase();
         let dataHasilPencarian = {};
