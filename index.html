@@ -421,7 +421,6 @@
           arrayData.push({ id: id, item: data[id] });
         }
 
-        // Mengurutkan tabel (A-Z) berdasarkan Nama Barang
         arrayData.sort((a, b) => {
           let namaA = (a.item.nama || "").toLowerCase();
           let namaB = (b.item.nama || "").toLowerCase();
@@ -444,13 +443,15 @@
         });
       }
 
-      // --- FITUR MENCATAT RIWAYAT (LOG) ---
-      function catatRiwayat(namaBarang, merkBarang, kategoriBarang, keterangan) {
+      // --- FITUR MENCATAT RIWAYAT (LOG) YANG DIPERBARUI ---
+      // Sekarang menerima sizeBarang untuk ditampilkan secara detail
+      function catatRiwayat(namaBarang, merkBarang, sizeBarang, kategoriBarang, keterangan) {
         push(ref(db, "riwayat-stok"), {
           waktu_angka: new Date().getTime(),
           waktu_teks: new Date().toLocaleString("id-ID"),
           nama: namaBarang,
           merk: merkBarang,
+          size: sizeBarang, // MENAMBAHKAN UKURAN (SIZE) KE DATABASE RIWAYAT
           kategori: kategoriBarang,
           keterangan: keterangan,
         });
@@ -475,7 +476,7 @@
           jumlah: jumlahInput,
         });
 
-        catatRiwayat(namaInput, merkInput, namaKategori, `Barang Baru Masuk (+${jumlahInput})`);
+        catatRiwayat(namaInput, merkInput, sizeInput, namaKategori, `Barang Baru Masuk (+${jumlahInput})`);
 
         document.getElementById("namaBarang").value = "";
         document.getElementById("merkBarang").value = "";
@@ -515,9 +516,9 @@
 
         let selisih = jumlahBaru - stokLama;
         if (selisih > 0) {
-          catatRiwayat(namaBaru, merkBaru, namaKategori, `Masuk (+${selisih})`);
+          catatRiwayat(namaBaru, merkBaru, sizeBaru, namaKategori, `Masuk (+${selisih})`);
         } else if (selisih < 0) {
-          catatRiwayat(namaBaru, merkBaru, namaKategori, `Keluar (${selisih})`);
+          catatRiwayat(namaBaru, merkBaru, sizeBaru, namaKategori, `Keluar (${selisih})`);
         }
 
         update(ref(db, "stok-naratic/" + kategoriSaatIni + "/" + id), {
@@ -595,11 +596,16 @@
         arrayData.forEach((item) => {
           let warnaKeterangan = item.keterangan.includes("Keluar") ? "#cc0000" : "#28a745";
 
+          // Membuat teks size berwarna jingga (orange) agar terlihat beda dengan merk
+          let labelSize = item.size ? `<span style="font-size: 10px; color: #e67e22; font-weight:bold;">| Ukuran: ${item.size}</span>` : "";
+
           tabel.innerHTML += `<tr>
                 <td style="font-size: 10px; color:#666;">${item.waktu_teks}</td>
                 <td>
                     <strong>${item.nama}</strong><br>
-                    <span style="font-size: 10px; color: #004080; font-weight:bold;">[${item.merk}]</span> - <span style="font-size: 10px; color: #888;">${item.kategori}</span>
+                    <span style="font-size: 10px; color: #004080; font-weight:bold;">[${item.merk}]</span> 
+                    ${labelSize}
+                    - <span style="font-size: 10px; color: #888;">${item.kategori}</span>
                 </td>
                 <td style="color: ${warnaKeterangan}; font-weight: bold; text-align: center;">${item.keterangan}</td>
             </tr>`;
