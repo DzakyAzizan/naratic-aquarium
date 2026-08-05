@@ -122,7 +122,6 @@
         <button class="btn-menu" onclick="bukaKategori('media-aquarium', 'Media Aquarium')">🧽 Media Aquarium</button>
         <button class="btn-menu btn-riwayat" onclick="bukaRiwayat()">📜 Riwayat Keluar & Masuk</button>
         
-        <!-- Tombol Keluar (Logout) Baru -->
         <button class="btn-menu btn-logout" onclick="logoutApp()">🚪 Keluar (Logout)</button>
       </div>
     </div>
@@ -221,7 +220,6 @@
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
       import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-      // Import Firebase Auth Baru
       import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
       const firebaseConfig = {
@@ -236,15 +234,12 @@
 
       const app = initializeApp(firebaseConfig);
       const db = getDatabase(app);
-      const auth = getAuth(app); // Mengaktifkan modul keamanan
+      const auth = getAuth(app);
 
       let kategoriSaatIni = "";
       let listenerFirebase = null;
       let dataGlobal = {};
 
-      // --- SISTEM LOGIN AMAN DENGAN FIREBASE AUTH ---
-      
-      // Mengecek apakah sebelumnya kamu sudah login, jika sudah langsung masuk tanpa ngetik password lagi
       onAuthStateChanged(auth, (user) => {
         if (user) {
           document.getElementById("halamanLogin").style.display = "none";
@@ -263,24 +258,20 @@
         tombolLogin.innerText = "⏳ Sedang Masuk...";
         document.getElementById("pesanError").style.display = "none";
 
-        // Mengubah ID admin menjadi email agar dikenali server Firebase
         let emailFirebase = idUser + "@naratic.com";
 
         signInWithEmailAndPassword(auth, emailFirebase, passUser)
           .then((userCredential) => {
-             // Berhasil masuk, tampilan akan diatur oleh onAuthStateChanged di atas
              tombolLogin.innerText = "Masuk Aplikasi";
              document.getElementById("inputId").value = "";
              document.getElementById("inputPw").value = "";
           })
           .catch((error) => {
-             // Jika salah password atau ID
              tombolLogin.innerText = "Masuk Aplikasi";
              document.getElementById("pesanError").style.display = "block";
           });
       };
 
-      // Tekan Enter untuk Login
       document.getElementById('inputPw').addEventListener('keypress', function (e) {
           if (e.key === 'Enter') { window.cekLogin(); }
       });
@@ -288,10 +279,8 @@
           if (e.key === 'Enter') { document.getElementById('inputPw').focus(); }
       });
 
-      // Fungsi Logout (Keluar)
       window.logoutApp = function() {
           signOut(auth).then(() => {
-              // Menyembunyikan dashboard dan memaksa pengguna kembali ke halaman login
               document.getElementById("halamanDashboard").style.display = "none";
               document.getElementById("halamanInventaris").style.display = "none";
               document.getElementById("halamanRiwayat").style.display = "none";
@@ -299,7 +288,6 @@
           });
       };
 
-      // --- NAVIGASI KEMBALI KE DASHBOARD ---
       window.kembaliKeDashboard = function () {
         document.getElementById("halamanDashboard").style.display = "block";
         document.getElementById("halamanInventaris").style.display = "none";
@@ -309,7 +297,6 @@
         }
       };
 
-      // --- HALAMAN KATEGORI BARANG ---
       window.bukaKategori = function (kodeKategori, namaKategoriTampil) {
         kategoriSaatIni = kodeKategori;
         document.getElementById("halamanDashboard").style.display = "none";
@@ -351,7 +338,8 @@
           let notifStok = "";
           let warnaStok = "";
 
-          if (kategoriSaatIni === "kebutuhan-kaca" && item.jumlah <= 2) {
+          // PERINGATAN STOK MENIPIS AKTIF DI SEMUA KATEGORI (JIKA JUMLAH <= 2)
+          if (item.jumlah <= 2) {
             warnaStok = "color: #cc0000;";
             notifStok = `<br><span style="background: #ffe6e6; color: #cc0000; padding: 2px 5px; border-radius: 4px; font-size: 9px; font-weight: bold;">⚠️ Isi Ulang!</span>`;
           }
@@ -371,7 +359,6 @@
         });
       }
 
-      // --- FITUR MENCATAT RIWAYAT (LOG) ---
       function catatRiwayat(namaBarang, merkBarang, sizeBarang, kategoriBarang, keterangan) {
         push(ref(db, "riwayat-stok"), {
           waktu_angka: new Date().getTime(),
@@ -450,7 +437,6 @@
         tutupModal();
       };
 
-      // --- PENCARIAN CERDAS (FOKUS HURUF DEPAN) ---
       window.cariData = function () {
         let kataKunci = document.getElementById("cariBarang").value.toLowerCase();
         let dataHasilPencarian = {};
@@ -473,7 +459,6 @@
         tampilkanData(dataHasilPencarian);
       };
 
-      // --- HALAMAN RIWAYAT KELUAR MASUK ---
       window.bukaRiwayat = function () {
         document.getElementById("halamanDashboard").style.display = "none";
         document.getElementById("halamanInventaris").style.display = "none";
