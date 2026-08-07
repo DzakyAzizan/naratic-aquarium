@@ -140,7 +140,6 @@
         <div class="form-group"><label>Nama Barang</label><input type="text" id="namaBarang" /></div>
         <div class="form-group"><label>Merk</label><input type="text" id="merkBarang" /></div>
         <div class="form-group"><label>Size</label><input type="text" id="sizeBarang" /></div>
-        <!-- Diubah menjadi tipe text agar bisa isi satuan misal: 10 pcs, 5 liter -->
         <div class="form-group"><label>Jumlah Stok (Cth: 10 pcs / 5 liter)</label><input type="text" id="jumlahBarang" placeholder="Cth: 10 pcs" /></div>
         <button class="btn-primary" onclick="tambahBarang()">Simpan Barang ke Stok</button>
       </div>
@@ -208,7 +207,6 @@
         <div class="form-group"><label>Nama Barang</label><input type="text" id="editNama" /></div>
         <div class="form-group"><label>Merk</label><input type="text" id="editMerk" /></div>
         <div class="form-group"><label>Size</label><input type="text" id="editSize" /></div>
-        <!-- Diubah menjadi tipe text untuk edit satuan -->
         <div class="form-group"><label>Jumlah Stok</label><input type="text" id="editJumlah" /></div>
 
         <div class="modal-buttons">
@@ -340,7 +338,6 @@
           let notifStok = "";
           let warnaStok = "";
 
-          // Mengambil angka pertama dari string stok (misal "2 pcs" diambil angka 2-nya) untuk cek peringatan isi ulang
           let angkaStok = parseInt(item.jumlah);
           if (!isNaN(angkaStok) && angkaStok <= 2) {
             warnaStok = "color: #cc0000;";
@@ -389,7 +386,9 @@
           nama: namaInput, merk: merkInput, size: sizeInput, jumlah: jumlahInput,
         });
 
-        catatRiwayat(namaInput, merkInput, sizeInput, namaKategori, `Barang Baru Masuk (${jumlahInput})`);
+        // Mengambil angka untuk keterangan riwayat
+        let angkaBaru = parseInt(jumlahInput);
+        catatRiwayat(namaInput, merkInput, sizeInput, namaKategori, `Barang Baru Masuk (+${isNaN(angkaBaru) ? 0 : angkaBaru})`);
 
         document.getElementById("namaBarang").value = "";
         document.getElementById("merkBarang").value = "";
@@ -424,9 +423,19 @@
           alert("⚠️ Kolom edit tidak boleh kosong!"); return;
         }
 
-        let keteranganLog = `Edit Rincian (${jumlahBaru})`;
-        if (jumlahBaru !== stokLama) {
-          keteranganLog = `Perubahan Stok dari (${stokLama}) menjadi (${jumlahBaru})`;
+        // --- MENGEMBALIKAN LOGIKA "+ MASUK" DAN "- KELUAR" ---
+        let angkaBaru = parseInt(jumlahBaru);
+        let angkaLama = parseInt(stokLama);
+        let selisih = angkaBaru - angkaLama;
+        
+        let keteranganLog = "Edit Rincian Barang";
+        
+        if (!isNaN(selisih)) {
+            if (selisih > 0) {
+                keteranganLog = `Masuk (+${selisih})`;
+            } else if (selisih < 0) {
+                keteranganLog = `Keluar (${selisih})`;
+            }
         }
 
         catatRiwayat(namaBaru, merkBaru, sizeBaru, namaKategori, keteranganLog);
@@ -463,6 +472,7 @@
       window.bukaRiwayat = function () {
         document.getElementById("halamanDashboard").style.display = "none";
         document.getElementById("halamanInventaris").style.display = "none";
+        document.getElementById("halamanRiwayat").style.display = "none"; // Fix: harusnya display block
         document.getElementById("halamanRiwayat").style.display = "block";
         document.getElementById("tabelRiwayat").innerHTML = '<tr><td colspan="3" style="text-align:center;">⏳ Mengambil data riwayat...</td></tr>';
 
@@ -503,7 +513,7 @@
 
         arrayData.forEach((item) => {
           let warnaKeterangan = "#28a745";
-          if (item.keterangan.includes("Keluar") || item.keterangan.includes("Perubahan")) {
+          if (item.keterangan.includes("Keluar")) {
             warnaKeterangan = "#cc0000";
           } else if (item.keterangan.includes("Edit")) {
             warnaKeterangan = "#ff9900";
