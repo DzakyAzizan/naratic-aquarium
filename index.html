@@ -312,6 +312,12 @@
         });
       };
 
+      // Fungsi untuk mengamankan teks dari kutip yang bisa merusak tombol HTML
+      function amankanTeks(teks) {
+        if (!teks) return "";
+        return teks.toString().replace(/'/g, "\\'").replace(/"/g, '\\"');
+      }
+
       function tampilkanData(data) {
         let tabel = document.getElementById("tabelStok");
         tabel.innerHTML = "";
@@ -344,6 +350,7 @@
             notifStok = `<br><span style="background: #ffe6e6; color: #cc0000; padding: 2px 5px; border-radius: 4px; font-size: 9px; font-weight: bold;">⚠️ Isi Ulang!</span>`;
           }
 
+          // Gunakan amankanTeks agar kutip pada ukuran tidak merusak tombol
           tabel.innerHTML += `<tr>
                 <td><strong>${item.nama}</strong></td>
                 <td align="center"><span style="background: #e6f2ff; padding: 4px 8px; border-radius: 6px; font-weight: bold; color: #004080; display: inline-block; font-size: 10px;">${merkItem}</span></td>
@@ -353,7 +360,7 @@
                     ${notifStok}
                 </td>
                 <td align="center">
-                    <button class="btn-edit" onclick="bukaModal('${id}', '${item.nama}', '${item.merk || ""}', '${item.size || ""}', '${item.jumlah}')">Ubah</button>
+                    <button class="btn-edit" onclick="bukaModal('${id}', '${amankanTeks(item.nama)}', '${amankanTeks(item.merk || "")}', '${amankanTeks(item.size || "")}', '${amankanTeks(item.jumlah)}')">Ubah</button>
                 </td>
             </tr>`;
         });
@@ -386,7 +393,6 @@
           nama: namaInput, merk: merkInput, size: sizeInput, jumlah: jumlahInput,
         });
 
-        // Mengambil angka untuk keterangan riwayat
         let angkaBaru = parseInt(jumlahInput);
         catatRiwayat(namaInput, merkInput, sizeInput, namaKategori, `Barang Baru Masuk (+${isNaN(angkaBaru) ? 0 : angkaBaru})`);
 
@@ -423,7 +429,6 @@
           alert("⚠️ Kolom edit tidak boleh kosong!"); return;
         }
 
-        // --- MENGEMBALIKAN LOGIKA "+ MASUK" DAN "- KELUAR" ---
         let angkaBaru = parseInt(jumlahBaru);
         let angkaLama = parseInt(stokLama);
         let selisih = angkaBaru - angkaLama;
@@ -472,7 +477,6 @@
       window.bukaRiwayat = function () {
         document.getElementById("halamanDashboard").style.display = "none";
         document.getElementById("halamanInventaris").style.display = "none";
-        document.getElementById("halamanRiwayat").style.display = "none"; // Fix: harusnya display block
         document.getElementById("halamanRiwayat").style.display = "block";
         document.getElementById("tabelRiwayat").innerHTML = '<tr><td colspan="3" style="text-align:center;">⏳ Mengambil data riwayat...</td></tr>';
 
