@@ -312,10 +312,15 @@
         });
       };
 
-      // Fungsi untuk mengamankan teks dari kutip yang bisa merusak tombol HTML
+      // FUNGSI BARU YANG 100% AMAN DARI SEGALA KUTIP
       function amankanTeks(teks) {
         if (!teks) return "";
-        return teks.toString().replace(/'/g, "\\'").replace(/"/g, '\\"');
+        return teks.toString()
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
       }
 
       function tampilkanData(data) {
@@ -350,7 +355,6 @@
             notifStok = `<br><span style="background: #ffe6e6; color: #cc0000; padding: 2px 5px; border-radius: 4px; font-size: 9px; font-weight: bold;">⚠️ Isi Ulang!</span>`;
           }
 
-          // Gunakan amankanTeks agar kutip pada ukuran tidak merusak tombol
           tabel.innerHTML += `<tr>
                 <td><strong>${item.nama}</strong></td>
                 <td align="center"><span style="background: #e6f2ff; padding: 4px 8px; border-radius: 6px; font-weight: bold; color: #004080; display: inline-block; font-size: 10px;">${merkItem}</span></td>
@@ -403,13 +407,19 @@
         alert("✅ Barang berhasil ditambah!");
       };
 
+      // FUNGSI UNTUK MEMBUKA MODAL DAN MENDEKODE TEKS KEMBALI
       window.bukaModal = function (id, nama, merk, size, jumlah) {
         document.getElementById("editId").value = id;
-        document.getElementById("editNama").value = nama;
-        document.getElementById("editMerk").value = merk;
-        document.getElementById("editSize").value = size;
-        document.getElementById("editJumlah").value = jumlah;
-        document.getElementById("editStokLama").value = jumlah;
+        
+        // Membangkitkan kembali karakter asli ke dalam kotak input form (mendekode)
+        const textarea = document.createElement("textarea");
+        
+        textarea.innerHTML = nama; document.getElementById("editNama").value = textarea.value;
+        textarea.innerHTML = merk; document.getElementById("editMerk").value = textarea.value;
+        textarea.innerHTML = size; document.getElementById("editSize").value = textarea.value;
+        textarea.innerHTML = jumlah; document.getElementById("editJumlah").value = textarea.value;
+        
+        document.getElementById("editStokLama").value = document.getElementById("editJumlah").value;
         document.getElementById("editModal").style.display = "flex";
       };
 
